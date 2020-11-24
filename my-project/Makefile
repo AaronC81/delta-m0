@@ -1,15 +1,20 @@
 PROJECT = delta-m0
 BUILD_DIR = bin
 
-CFILES = init.c ssd1306.c main.c
+CFILES = assets/graphics.c init.c ssd1306.c main.c 
 
 # TODO - you will need to edit these two lines!
 DEVICE=stm32f031k6t6
 
-.phony: usartflash
+.phony: usartflash .FORCE
 
 usartflash: all
 	stm32flash /dev/ttyUSB0 -w $(PROJECT).bin
+
+assets/graphics.c: .FORCE
+	ruby assets/build_graphics.rb
+
+.FORCE:
 
 # You shouldn't have to edit anything below here.
 VPATH += $(SHARED_DIR)
