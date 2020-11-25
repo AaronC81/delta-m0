@@ -40,6 +40,7 @@ bool input_insert(enum token tk) {
     // Insert new token
     input_tokens[input_tokens_length] = tk;
     input_tokens_length++;
+    input_tokens_cursor++;
 
     return true;
 }
@@ -54,7 +55,7 @@ void input_delete(void) {
 }
 
 void input_redraw_tokens(uint8_t x, uint8_t page) {
-    const uint8_t padding = 2; // Space between bitmaps
+    const uint8_t padding = 3; // Space between bitmaps
     
     for (token_index_t i = 0; i < input_tokens_length; i++) {
         // Get the bitmap

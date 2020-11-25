@@ -6,6 +6,7 @@
 #include "keypad.h"
 #include "tokens.h"
 #include "input.h"
+#include "key_mapping.h"
 #include "assets/graphics.h"
 
 uint8_t x;
@@ -17,10 +18,10 @@ int main(void) {
 	while (1) {
 		uint8_t row, col;
 		if (keypad_get_pressed(&row, &col)) {
-			input_insert(TOKEN_0);
-			input_redraw_tokens(2, 3);
+			key_mapping_action(row, col);
+			input_redraw_tokens(2, 6);
 
-			for (volatile int i = 0; i < 500000; i++);
+			for (volatile int i = 0; i < 200000; i++);
 		}
 	}
 }
