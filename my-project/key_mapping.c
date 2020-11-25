@@ -11,6 +11,12 @@ void key_mapping_action(uint8_t row, uint8_t col) {
         case 0:
             input_insert(TOKEN_LPAREN);
             return;
+        case 1:
+            input_cursor_left();
+            return;
+        case 2:
+            input_cursor_right();
+            return;
         case 3:
             input_insert(TOKEN_RPAREN);
             return;

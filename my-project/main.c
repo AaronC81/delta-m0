@@ -19,6 +19,7 @@ int main(void) {
 		uint8_t row, col;
 		if (keypad_get_pressed(&row, &col)) {
 			key_mapping_action(row, col);
+			ssd1306_fill(0);
 			input_redraw_tokens(2, 6);
 
 			for (volatile int i = 0; i < 200000; i++);
