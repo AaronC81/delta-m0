@@ -1,7 +1,7 @@
 PROJECT = delta-m0
 BUILD_DIR = bin
 
-CFILES = assets/graphics.c init.c ssd1306.c main.c 
+CFILES = assets/graphics.c tokens.c input.c init.c ssd1306.c keypad.c main.c 
 
 # TODO - you will need to edit these two lines!
 DEVICE=stm32f031k6t6

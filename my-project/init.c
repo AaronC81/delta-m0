@@ -5,6 +5,7 @@
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/usart.h>
 #include "ssd1306.h"
+#include "keypad.h"
 
 // PB6: SCL
 // PB7: SDA
@@ -41,4 +42,7 @@ void init(void) {
     
     // Init display
     ssd1306_init();
+
+    // Init keypad
+    keypad_init();
 }
