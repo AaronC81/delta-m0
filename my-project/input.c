@@ -33,8 +33,10 @@ bool input_insert(enum token tk) {
     }
 
     // Move everything one forwards
-    for (token_index_t i = input_tokens_length; i > input_tokens_cursor; i--) {
-        input_tokens[i + 1] = input_tokens[i];
+    if (input_tokens_length > 0) {
+        for (token_index_t i = input_tokens_length - 1; i >= input_tokens_cursor; i--) {
+            input_tokens[i + 1] = input_tokens[i];
+        }
     }
 
     // Insert new token
