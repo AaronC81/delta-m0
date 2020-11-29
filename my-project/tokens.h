@@ -14,6 +14,9 @@ enum token {
     TOKEN_DOT = 14,
 } __attribute__((__packed__));
 
+// Type large enough to index into token array + 1
+#define token_index_t uint8_t
+
 // Make sure the token enum is nice and small
 _Static_assert(sizeof(enum token) == 1, "token enum is too large");
 
