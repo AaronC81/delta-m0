@@ -27,3 +27,9 @@ bool evaluator_accept_digit(struct evaluator_context *ctx, uint8_t *digit);
 enum evaluator_status evaluator_expect(struct evaluator_context *ctx, enum token what);
 
 enum evaluator_status evaluator_integer(struct evaluator_context *ctx, evaluator_t *result);
+
+enum evaluator_status evaluator_expression(struct evaluator_context *ctx, evaluator_t *result);
+enum evaluator_status evaluator_add_sub_cascade(struct evaluator_context *ctx, evaluator_t *result);
+enum evaluator_status evaluator_mul_div_cascade(struct evaluator_context *ctx, evaluator_t *result);
+enum evaluator_status evaluator_brackets_cascade(struct evaluator_context *ctx, evaluator_t *result);
+enum evaluator_status evaluator_number_cascade(struct evaluator_context *ctx, evaluator_t *result);

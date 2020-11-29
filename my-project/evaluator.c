@@ -39,7 +39,6 @@ enum evaluator_status evaluator_integer(struct evaluator_context *ctx, evaluator
     
     // We need at least one digit
     if (!evaluator_accept_digit(ctx, &digit)) {
-        printf("Oh no\n");
         return EVALUATOR_STATUS_SYNTAX_ERROR;
     }
 
@@ -52,4 +51,51 @@ enum evaluator_status evaluator_integer(struct evaluator_context *ctx, evaluator
     }
 
     return EVALUATOR_STATUS_OK;
+}
+
+enum evaluator_status evaluator_expression(struct evaluator_context *ctx, evaluator_t *result) {
+    return evaluator_add_sub_cascade(ctx, result);
+}
+
+enum evaluator_status evaluator_add_sub_cascade(struct evaluator_context *ctx, evaluator_t *result) {
+    EVALUATOR_STATUS_PROP(evaluator_mul_div_cascade(ctx, result));
+
+    // TODO: also handle minus
+    if (evaluator_accept(ctx, TOKEN_PLUS)) {
+        evaluator_t recurse_result;
+        EVALUATOR_STATUS_PROP(evaluator_add_sub_cascade(ctx, &recurse_result));
+
+        *result += recurse_result;
+    }
+
+    return EVALUATOR_STATUS_OK;
+}
+
+enum evaluator_status evaluator_mul_div_cascade(struct evaluator_context *ctx, evaluator_t *result) {
+    EVALUATOR_STATUS_PROP(evaluator_brackets_cascade(ctx, result));
+
+    // TODO: also handle divide
+    if (evaluator_accept(ctx, TOKEN_DOT)) {
+        evaluator_t recurse_result;
+        EVALUATOR_STATUS_PROP(evaluator_mul_div_cascade(ctx, &recurse_result));
+
+        *result *= recurse_result;
+    }
+
+    return EVALUATOR_STATUS_OK;
+}
+
+enum evaluator_status evaluator_brackets_cascade(struct evaluator_context *ctx, evaluator_t *result) {
+    if (evaluator_accept(ctx, TOKEN_LPAREN)) {
+        enum evaluator_status status = evaluator_expression(ctx, result);
+        evaluator_expect(ctx, TOKEN_RPAREN);
+        return status;
+    } else {
+        return evaluator_number_cascade(ctx, result);
+    }
+}
+
+enum evaluator_status evaluator_number_cascade(struct evaluator_context *ctx, evaluator_t *result) {
+    // TODO: decimals
+    return evaluator_integer(ctx, result);
 }
