@@ -24,6 +24,15 @@ void key_mapping_action(uint8_t row, uint8_t col) {
         return;
     case 1:
         switch (col) {
+        case 0:
+            input_insert(TOKEN_7);
+            return;
+        case 1:
+            input_insert(TOKEN_8);
+            return;
+        case 2:
+            input_insert(TOKEN_9);
+            return;
         case 3:
             input_insert(TOKEN_PLUS);
             return;
@@ -31,6 +40,15 @@ void key_mapping_action(uint8_t row, uint8_t col) {
         return;
     case 2:
         switch (col) {
+        case 0:
+            input_insert(TOKEN_4);
+            return;
+        case 1:
+            input_insert(TOKEN_5);
+            return;
+        case 2:
+            input_insert(TOKEN_6);
+            return;
         case 3:
             input_insert(TOKEN_DOT);
             return;
@@ -43,6 +61,9 @@ void key_mapping_action(uint8_t row, uint8_t col) {
             return;
         case 1:
             input_insert(TOKEN_2);
+            return;
+        case 2:
+            input_insert(TOKEN_3);
             return;
         }
         return;
