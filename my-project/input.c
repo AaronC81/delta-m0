@@ -57,12 +57,12 @@ void input_delete(void) {
 }
 
 uint8_t input_last_cursor_x = 0;
+const uint8_t input_digit_padding = 3; // Space between bitmaps
 
 // TODO: will have to rewrite this to make it much better at some point
 // It doesn't scroll and smears for non-end insertions
 // For now, just clear the screen each time in main.c
 void input_redraw_tokens(uint8_t x, uint8_t page) {
-    const uint8_t padding = 3; // Space between bitmaps
 
     // Remove last cursor
     uint8_t not_cursor[] = { 1, 2, 0, 0 };
@@ -94,6 +94,41 @@ void input_redraw_tokens(uint8_t x, uint8_t page) {
         }
 
         // Move on
-        x += bitmap_width + padding;
+        x += bitmap_width + input_digit_padding;
+    }
+}
+
+void input_evaluate(void) {
+    // Evaluate
+    struct evaluator_context ctx = {
+        .idx = 0,
+        .tokens = input_tokens,
+        .tokens_length = input_tokens_length,
+    };
+    evaluator_t result;
+    enum evaluator_status status = evaluator_expression(&ctx, &result);
+
+    switch (status) {
+    case EVALUATOR_STATUS_OK:
+        input_draw_evaluator_t(result, 126, 2);
+        break;
+    case EVALUATOR_STATUS_SYNTAX_ERROR:
+        ssd1306_draw_bitmap(graphics_syntax_error, 126 - graphics_syntax_error[0], 2);
+        break;
+    }
+}
+
+// This implementation will break if evaluator_t isn't double
+_Static_assert(sizeof(evaluator_t) == sizeof(double), "expected evaluator_t to be double");
+void input_draw_evaluator_t(evaluator_t number, uint8_t x, uint8_t page) {
+    const uint8_t digit_width = token_bitmaps[TOKEN_0][0];
+    
+    // Print the whole part
+    uint32_t whole = number / 1;
+    while (whole > 0) {
+        x -= digit_width + input_digit_padding;
+        uint8_t digit = whole % 10;
+        ssd1306_draw_bitmap(token_bitmaps[TOKEN_0 + digit], x, page);
+        whole /= 10;
     }
 }

@@ -12,6 +12,10 @@
 uint8_t x;
 
 int main(void) {
+	// Hang on for a little bit after starting up, or the display is unhappy
+	// (This is about 0.2 seconds)
+	for (volatile uint32_t i = 0; i < 100000; i++);
+
 	init();
 	ssd1306_fill(0); // Blank
 
@@ -21,6 +25,7 @@ int main(void) {
 			key_mapping_action(row, col);
 			ssd1306_fill(0);
 			input_redraw_tokens(2, 6);
+			input_evaluate();
 
 			for (volatile int i = 0; i < 200000; i++);
 		}
