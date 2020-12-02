@@ -4,3 +4,17 @@ bin/
 generated.*.ld
 my-project/assets/graphics.*
 test/bin
+
+# Kicad
+*.bak
+*.bck
+*.kicad_pcb-bak
+*.kicad_sch-bak
+*.kicad_prl
+*.sch-bak
+*~
+_autosave-*
+*.tmp
+*-save.pro
+*-save.kicad_pcb
+**/fp-info-cache

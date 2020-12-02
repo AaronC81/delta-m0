@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name 2020-12-01_00-25-50)(type Legacy)(uri ${KIPRJMOD}/2020-12-01_00-25-50.lib)(options "")(descr ""))
+  (lib (name SSD1306-128x64_OLED)(type Legacy)(uri ${KIPRJMOD}/ssd1306/SSD1306-128x64_OLED.lib)(options "")(descr ""))
+)

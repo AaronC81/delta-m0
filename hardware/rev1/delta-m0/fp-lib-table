@@ -1,0 +1,6 @@
+(fp_lib_table
+  (lib (name PTS636)(type KiCad)(uri ${KIPRJMOD}/pts636/PTS636.pretty)(options "")(descr ""))
+  (lib (name pts636)(type KiCad)(uri ${KIPRJMOD}/pts636.pretty)(options "")(descr ""))
+  (lib (name SSD1306)(type KiCad)(uri ${KIPRJMOD}/ssd1306/SSD1306.pretty)(options "")(descr ""))
+  (lib (name bg)(type KiCad)(uri ${KIPRJMOD}/bg.pretty)(options "")(descr ""))
+)
