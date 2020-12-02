@@ -1,18 +1,33 @@
-Easy "clone and go" repository for a libopencm3 based project.
+# Delta M0
 
-# Instructions
- 1. git clone --recurse-submodules https://github.com/libopencm3/libopencm3-template.git your-project
- 2. cd your-project
- 3. make -C libopencm3 # (Only needed once)
- 4. make -C my-project
+## What is this?
 
-If you have an older git, or got ahead of yourself and skipped the ```--recurse-submodules```
-you can fix things by running ```git submodule update --init``` (This is only needed once)
+Delta M0 is a **basic, compact scientific calculator** based on an STM32F0
+microcontroller.
 
-# Directories
-* my-project contains your application
-* my-common-code contains something shared.
+It's far from fully featured, but it's getting there!
 
-# As a template
-You should replace this with your _own_ README if you are using this
-as a template.
+## How well does it work?
+
+Great question! The software works fine on a breadboard prototype, but the
+hardware is untested.
+
+## Project structure
+
+This is based off the
+[libopencm3 template](https://github.com/libopencm3/libopencm3-template).
+
+  - `my-project` contains the C code for the firmware.
+  - `test` is a small set of unit tests which you can run with `./test/run`.
+  - `hardware` contains the KiCad files for the PCB. 
+
+# Building
+
+Make sure you clone with `--recurse-submodules`!
+
+Then:
+
+```
+make -C libopencm3
+make -C my-project
+```
