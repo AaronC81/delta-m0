@@ -18,3 +18,5 @@ _autosave-*
 *-save.pro
 *-save.kicad_pcb
 **/fp-info-cache
+
+hardware/rev1/delta-m0/gerbers
