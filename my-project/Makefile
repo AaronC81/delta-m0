@@ -1,7 +1,7 @@
 PROJECT = delta-m0
 BUILD_DIR = bin
 
-CFILES = assets/graphics.c tokens.c evaluator.c input.c key_mapping.c init.c ssd1306.c keypad.c main.c 
+CFILES = assets/graphics.c text.c tokens.c evaluator.c input.c key_mapping.c init.c ssd1306.c keypad.c main.c 
 
 DEVICE=STM32F051K6T7
 
