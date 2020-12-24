@@ -49,6 +49,9 @@ void key_mapping_action(uint8_t row, uint8_t col) {
         case 2:
             input_insert(TOKEN_6);
             return;
+        case 3:
+            input_insert(TOKEN_SUBTRACT);
+            return;
         }
         return;
     case 3:
@@ -63,7 +66,7 @@ void key_mapping_action(uint8_t row, uint8_t col) {
             input_insert(TOKEN_3);
             return;
         case 3:
-            input_insert(TOKEN_DOT);
+            input_insert(TOKEN_MULTIPLY);
             return;
         }
         return;
@@ -71,6 +74,9 @@ void key_mapping_action(uint8_t row, uint8_t col) {
         switch (col) {
         case 0:
             input_insert(TOKEN_0);
+            return;
+        case 3:
+            input_insert(TOKEN_DIVIDE);
             return;
         }
         return;

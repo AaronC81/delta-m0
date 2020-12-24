@@ -18,7 +18,9 @@ enum token {
     TOKEN_LPAREN = 11,
     TOKEN_RPAREN = 12,
     TOKEN_PLUS = 13,
-    TOKEN_DOT = 14,
+    TOKEN_SUBTRACT = 14,
+    TOKEN_MULTIPLY = 15,
+    TOKEN_DIVIDE = 16,
 } __attribute__((__packed__));
 
 // Type large enough to index into token array + 1
@@ -27,6 +29,6 @@ enum token {
 // Make sure the token enum is nice and small
 _Static_assert(sizeof(enum token) == 1, "token enum is too large");
 
-#define TOKEN_BITMAPS_LENGTH 15
+#define TOKEN_BITMAPS_LENGTH 17
 
 extern const uint8_t *token_bitmaps[TOKEN_BITMAPS_LENGTH];

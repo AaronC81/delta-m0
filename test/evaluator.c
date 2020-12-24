@@ -53,7 +53,7 @@ int main(void) {
 
     // Test expression evaluation
     ctx.idx = 0;
-    ctx.tokens = (enum token[]){ TOKEN_1, TOKEN_PLUS, TOKEN_2, TOKEN_DOT, TOKEN_2 };
+    ctx.tokens = (enum token[]){ TOKEN_1, TOKEN_PLUS, TOKEN_2, TOKEN_MULTIPLY, TOKEN_2 };
     ctx.tokens_length = 5;
     {
         evaluator_t result;
@@ -63,7 +63,7 @@ int main(void) {
     }
 
     ctx.idx = 0;
-    ctx.tokens = (enum token[]){ TOKEN_LPAREN, TOKEN_1, TOKEN_PLUS, TOKEN_2, TOKEN_RPAREN, TOKEN_DOT, TOKEN_2 };
+    ctx.tokens = (enum token[]){ TOKEN_LPAREN, TOKEN_1, TOKEN_PLUS, TOKEN_2, TOKEN_RPAREN, TOKEN_MULTIPLY, TOKEN_2 };
     ctx.tokens_length = 7;
     {
         evaluator_t result;

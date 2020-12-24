@@ -75,7 +75,7 @@ enum evaluator_status evaluator_mul_div_cascade(struct evaluator_context *ctx, e
     EVALUATOR_STATUS_PROP(evaluator_brackets_cascade(ctx, result));
 
     // TODO: also handle divide
-    if (evaluator_accept(ctx, TOKEN_DOT)) {
+    if (evaluator_accept(ctx, TOKEN_MULTIPLY)) {
         evaluator_t recurse_result;
         EVALUATOR_STATUS_PROP(evaluator_mul_div_cascade(ctx, &recurse_result));
 

@@ -17,5 +17,7 @@ const uint8_t *token_bitmaps[TOKEN_BITMAPS_LENGTH] = {
     graphics_token_lparen,
     graphics_token_rparen,
     graphics_token_plus,
-    graphics_token_dot,
+    graphics_token_subtract,
+    graphics_token_multiply,
+    graphics_token_divide,
 };
