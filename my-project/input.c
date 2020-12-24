@@ -122,6 +122,12 @@ void input_evaluate(void) {
 _Static_assert(sizeof(evaluator_t) == sizeof(double), "expected evaluator_t to be double");
 void input_draw_evaluator_t(evaluator_t number, uint8_t x, uint8_t page) {
     const uint8_t digit_width = token_bitmaps[TOKEN_0][0];
+
+    bool negative = false;
+    if (number < 0) {
+        negative = true;
+        number = -number;
+    }
     
     // Print the whole part
     uint32_t whole = number / 1;
@@ -130,5 +136,11 @@ void input_draw_evaluator_t(evaluator_t number, uint8_t x, uint8_t page) {
         uint8_t digit = whole % 10;
         ssd1306_draw_bitmap(token_bitmaps[TOKEN_0 + digit], x, page);
         whole /= 10;
+    }
+
+    // Print negative sign if needed
+    if (negative) {
+        x -= token_bitmaps[TOKEN_SUBTRACT][0];
+        ssd1306_draw_bitmap(token_bitmaps[TOKEN_SUBTRACT], x, page);
     }
 }

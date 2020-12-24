@@ -60,12 +60,17 @@ enum evaluator_status evaluator_expression(struct evaluator_context *ctx, evalua
 enum evaluator_status evaluator_add_sub_cascade(struct evaluator_context *ctx, evaluator_t *result) {
     EVALUATOR_STATUS_PROP(evaluator_mul_div_cascade(ctx, result));
 
-    // TODO: also handle minus
     if (evaluator_accept(ctx, TOKEN_PLUS)) {
         evaluator_t recurse_result;
         EVALUATOR_STATUS_PROP(evaluator_add_sub_cascade(ctx, &recurse_result));
 
         *result += recurse_result;
+    } else if (evaluator_accept(ctx, TOKEN_SUBTRACT)) {
+        // TODO: this is broken: "1 - 2 - 5" returns 4
+        evaluator_t recurse_result;
+        EVALUATOR_STATUS_PROP(evaluator_add_sub_cascade(ctx, &recurse_result));
+
+        *result -= recurse_result;
     }
 
     return EVALUATOR_STATUS_OK;
@@ -74,12 +79,16 @@ enum evaluator_status evaluator_add_sub_cascade(struct evaluator_context *ctx, e
 enum evaluator_status evaluator_mul_div_cascade(struct evaluator_context *ctx, evaluator_t *result) {
     EVALUATOR_STATUS_PROP(evaluator_brackets_cascade(ctx, result));
 
-    // TODO: also handle divide
     if (evaluator_accept(ctx, TOKEN_MULTIPLY)) {
         evaluator_t recurse_result;
         EVALUATOR_STATUS_PROP(evaluator_mul_div_cascade(ctx, &recurse_result));
 
         *result *= recurse_result;
+    } else if (evaluator_accept(ctx, TOKEN_DIVIDE)) {
+        evaluator_t recurse_result;
+        EVALUATOR_STATUS_PROP(evaluator_mul_div_cascade(ctx, &recurse_result));
+
+        *result /= recurse_result;
     }
 
     return EVALUATOR_STATUS_OK;
