@@ -4,6 +4,8 @@
 #include "tokens.h"
 
 #define ASSERT_END assert(ctx.idx == ctx.tokens_length)
+#define TOKENS(...) ((enum token[]){ __VA_ARGS__ })
+#define TOKENS_L(...) TOKENS(__VA_ARGS__), (sizeof(TOKENS(__VA_ARGS__)) / sizeof(enum token))
 
 struct evaluator_context ctx;
 
@@ -39,34 +41,31 @@ int main(void) {
 
     // Test digit accept
     test_expression(
-        (enum token[]){
-            TOKEN_6
-        }, 1,
+        TOKENS_L(TOKEN_6),
         6
     );
 
 
     // Test integer evaluation
     test_expression(
-        (enum token[]){
-            TOKEN_1, TOKEN_0, TOKEN_2
-        }, 3,
+        TOKENS_L(TOKEN_1, TOKEN_0, TOKEN_2),
         102
     );
-    
+
 
     // Test expression evaluation
     test_expression(
-        (enum token[]){
-            TOKEN_1, TOKEN_PLUS, TOKEN_2, TOKEN_MULTIPLY, TOKEN_2
-        }, 5,
+        TOKENS_L(TOKEN_1, TOKEN_PLUS, TOKEN_2, TOKEN_MULTIPLY, TOKEN_2),
         5
     );
 
     test_expression(
-        (enum token[]){
-            TOKEN_LPAREN, TOKEN_1, TOKEN_PLUS, TOKEN_2, TOKEN_RPAREN, TOKEN_MULTIPLY, TOKEN_2
-        }, 7,
+        TOKENS_L(TOKEN_LPAREN, TOKEN_1, TOKEN_PLUS, TOKEN_2, TOKEN_RPAREN, TOKEN_MULTIPLY, TOKEN_2),
+        6
+    );
+
+    test_expression(
+        TOKENS_L(TOKEN_LPAREN, TOKEN_1, TOKEN_PLUS, TOKEN_2, TOKEN_RPAREN, TOKEN_MULTIPLY, TOKEN_2),
         6
     );
 }
