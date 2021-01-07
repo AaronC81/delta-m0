@@ -5,10 +5,20 @@
 
 #define ASSERT_END assert(ctx.idx == ctx.tokens_length)
 
+struct evaluator_context ctx;
+
+void test_expression(enum token* tokens, token_index_t tokens_length, evaluator_t expected_result) {
+    ctx.idx = 0;
+    ctx.tokens = tokens;
+    ctx.tokens_length = tokens_length;
+
+    evaluator_t result;
+    assert(evaluator_expression(&ctx, &result) == EVALUATOR_STATUS_OK);
+    assert(result == expected_result);
+    ASSERT_END;
+}
+
 int main(void) {
-    struct evaluator_context ctx;
-
-
     // Test accept
     ctx.idx = 0;
     ctx.tokens = (enum token[]){ TOKEN_1 };
@@ -28,47 +38,35 @@ int main(void) {
 
 
     // Test digit accept
-    ctx.idx = 0;
-    ctx.tokens = (enum token[]){ TOKEN_1 };
-    ctx.tokens_length = 1;
-    {
-        uint8_t digit;
-        assert(evaluator_accept_digit(&ctx, &digit) == true);
-        assert(digit == 1);
-        ASSERT_END;
-    }
+    test_expression(
+        (enum token[]){
+            TOKEN_6
+        }, 1,
+        6
+    );
 
 
     // Test integer evaluation
-    ctx.idx = 0;
-    ctx.tokens = (enum token[]){ TOKEN_1, TOKEN_0, TOKEN_2 };
-    ctx.tokens_length = 3;
-    {
-        evaluator_t result;
-        assert(evaluator_integer(&ctx, &result) == EVALUATOR_STATUS_OK);
-        assert(result == 102);
-        ASSERT_END;
-    }
-
+    test_expression(
+        (enum token[]){
+            TOKEN_1, TOKEN_0, TOKEN_2
+        }, 3,
+        102
+    );
+    
 
     // Test expression evaluation
-    ctx.idx = 0;
-    ctx.tokens = (enum token[]){ TOKEN_1, TOKEN_PLUS, TOKEN_2, TOKEN_MULTIPLY, TOKEN_2 };
-    ctx.tokens_length = 5;
-    {
-        evaluator_t result;
-        assert(evaluator_expression(&ctx, &result) == EVALUATOR_STATUS_OK);
-        assert(result == 5);
-        ASSERT_END;
-    }
+    test_expression(
+        (enum token[]){
+            TOKEN_1, TOKEN_PLUS, TOKEN_2, TOKEN_MULTIPLY, TOKEN_2
+        }, 5,
+        5
+    );
 
-    ctx.idx = 0;
-    ctx.tokens = (enum token[]){ TOKEN_LPAREN, TOKEN_1, TOKEN_PLUS, TOKEN_2, TOKEN_RPAREN, TOKEN_MULTIPLY, TOKEN_2 };
-    ctx.tokens_length = 7;
-    {
-        evaluator_t result;
-        assert(evaluator_expression(&ctx, &result) == EVALUATOR_STATUS_OK);
-        assert(result == 6);
-        ASSERT_END;
-    }
+    test_expression(
+        (enum token[]){
+            TOKEN_LPAREN, TOKEN_1, TOKEN_PLUS, TOKEN_2, TOKEN_RPAREN, TOKEN_MULTIPLY, TOKEN_2
+        }, 7,
+        6
+    );
 }
