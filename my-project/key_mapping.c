@@ -75,6 +75,9 @@ void key_mapping_action(uint8_t row, uint8_t col) {
         case 0:
             input_insert(TOKEN_0);
             return;
+        case 2:
+            input_delete();
+            return;
         case 3:
             input_insert(TOKEN_DIVIDE);
             return;

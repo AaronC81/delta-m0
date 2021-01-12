@@ -48,11 +48,17 @@ bool input_insert(enum token tk) {
 }
 
 void input_delete(void) {
+    // We can't delete if we're at the beginning
+    if (input_tokens_cursor == 0) {
+        return;
+    }
+    
     // Move everything one back (overwrites current item)
     for (token_index_t i = input_tokens_cursor; i < input_tokens_length; i++) {
         input_tokens[i] = input_tokens[i + 1];
     }
 
+    input_tokens_cursor--;
     input_tokens_length--;
 }
 
