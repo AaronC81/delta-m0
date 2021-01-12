@@ -111,3 +111,64 @@ enum evaluator_status evaluator_shunt(
 
     return EVALUATOR_STATUS_OK;
 }
+
+enum evaluator_status evaluator_evaluate(
+    struct evaluator_postfix_item *items, token_index_t items_length,
+    evaluator_t *result
+) {
+    // Set up everything
+    evaluator_t stack[TOKEN_LIMIT];
+    token_index_t stack_length = 0;
+
+    token_index_t items_index = 0;
+
+    // Iterate over tokens
+    while (items_index < items_length) {
+        struct evaluator_postfix_item this_item = items[items_index];
+
+        // If this is a number, push it onto the stack
+        if (!this_item.is_operator) {
+            STACK_PUSH(stack, this_item.value.number);
+        }
+        // Otherwise, it's an operator, deal with that
+        else {
+            evaluator_t a, b;
+
+            switch (this_item.value.operator) {
+            case TOKEN_PLUS:
+                a = STACK_POP(stack);
+                b = STACK_POP(stack);
+                STACK_PUSH(stack, b + a);
+                break;
+            case TOKEN_SUBTRACT:
+                a = STACK_POP(stack);
+                b = STACK_POP(stack);
+                STACK_PUSH(stack, b - a);
+                break;
+            case TOKEN_MULTIPLY:
+                a = STACK_POP(stack);
+                b = STACK_POP(stack);
+                STACK_PUSH(stack, b * a);
+                break;
+            case TOKEN_DIVIDE:
+                a = STACK_POP(stack);
+                b = STACK_POP(stack);
+                STACK_PUSH(stack, b / a);
+                break;
+            default:
+                return EVALUATOR_STATUS_SYNTAX_ERROR;
+            }
+        }
+
+        items_index++;
+    }
+
+    // There should only be one item left on the stack
+    if (STACK_LENGTH(stack) != 1) {
+        return EVALUATOR_STATUS_SYNTAX_ERROR;
+    }
+
+    // The result is the only remaining item
+    *result = STACK_POP(stack);
+    return EVALUATOR_STATUS_OK;
+}

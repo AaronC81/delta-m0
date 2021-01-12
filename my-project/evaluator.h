@@ -25,3 +25,8 @@ enum evaluator_status evaluator_shunt(
     enum token *tokens, token_index_t tokens_length,
     struct evaluator_postfix_item *output, token_index_t *output_length
 );
+
+enum evaluator_status evaluator_evaluate(
+    struct evaluator_postfix_item *items, token_index_t items_length,
+    evaluator_t *result
+);

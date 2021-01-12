@@ -19,10 +19,15 @@
 
 
 void test_expression(enum token* tokens, token_index_t tokens_length, evaluator_t expected_result) {
-    // evaluator_t result = 0;
-    // assert(evaluator_expression(&ctx, &result) == EVALUATOR_STATUS_OK);
-    // assert(result == expected_result);
-    // ASSERT_END;
+    // Shunt
+    struct evaluator_postfix_item items[TOKEN_LIMIT];
+    token_index_t items_length;
+    assert(evaluator_shunt(tokens, tokens_length, items, &items_length) == EVALUATOR_STATUS_OK);
+
+    // Evaluate
+    evaluator_t result;
+    assert(evaluator_evaluate(items, items_length, &result) == EVALUATOR_STATUS_OK);
+    assert(result == expected_result);
 }
 
 void test_shunt(
@@ -32,7 +37,7 @@ void test_shunt(
     struct evaluator_postfix_item actual_items[TOKEN_LIMIT];
     token_index_t actual_items_length;
 
-    evaluator_shunt(tokens, tokens_length, actual_items, &actual_items_length);
+    assert(evaluator_shunt(tokens, tokens_length, actual_items, &actual_items_length) == EVALUATOR_STATUS_OK);
 
     assert(actual_items_length == expected_items_length);
 
