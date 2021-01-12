@@ -3,22 +3,31 @@
 #include "input.h"
 #include "tokens.h"
 
+bool key_shift = false;
+
+#define KEY_HANDLE(_normal, _shift) \
+    if (key_shift) { \
+        _shift; \
+        key_shift = false; \
+    } else { \
+        _normal; \
+    }
+
 void key_mapping_action(uint8_t row, uint8_t col) {
     switch (row) {
     case 0:
         // TODO: this will be (SHIFT < > MENU) but need to implement shift first
         switch (col) {
         case 0:
-            input_insert(TOKEN_LPAREN);
+            key_shift = !key_shift;
             return;
         case 1:
-            input_cursor_left();
+            KEY_HANDLE(input_cursor_left(), input_insert(TOKEN_LPAREN));
             return;
         case 2:
-            input_cursor_right();
+            KEY_HANDLE(input_cursor_right(), input_insert(TOKEN_RPAREN));
             return;
         case 3:
-            input_insert(TOKEN_RPAREN);
             return;
         }
         return;

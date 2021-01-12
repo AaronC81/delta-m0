@@ -24,6 +24,12 @@ int main(void) {
 		if (keypad_get_pressed(&row, &col)) {
 			key_mapping_action(row, col);
 			ssd1306_fill(0);
+
+			// Shift indicator
+			ssd1306_set_position(0, 0);
+			ssd1306_data_start(1);
+			ssd1306_data(key_shift ? 0xFF : 0x00);
+
 			input_redraw_tokens(2, 6);
 			input_evaluate();
 
