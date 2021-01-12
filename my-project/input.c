@@ -108,7 +108,7 @@ void input_evaluate(void) {
     
     evaluator_t result;
     if (status == EVALUATOR_STATUS_OK) {
-        evaluator_evaluate(items, items_length, &result);
+        status = evaluator_evaluate(items, items_length, &result);
     }
 
     switch (status) {
