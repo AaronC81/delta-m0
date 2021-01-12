@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "assets/graphics.h"
 
 enum token {
@@ -23,7 +24,9 @@ enum token {
     TOKEN_DIVIDE = 16,
 } __attribute__((__packed__));
 
-// Type large enough to index into token array + 1
+#define TOKEN_LIMIT 128
+
+// Type large enough to index into array of size TOKEN_LIMIT + 1
 #define token_index_t uint8_t
 
 // Make sure the token enum is nice and small
@@ -32,3 +35,6 @@ _Static_assert(sizeof(enum token) == 1, "token enum is too large");
 #define TOKEN_BITMAPS_LENGTH 17
 
 extern const uint8_t *token_bitmaps[TOKEN_BITMAPS_LENGTH];
+
+bool token_is_operator(enum token t);
+uint8_t token_operator_precedence(enum token t);

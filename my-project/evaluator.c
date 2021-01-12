@@ -1,110 +1,113 @@
 #include "evaluator.h"
 
-enum evaluator_status __evaluator_status_temp;
+// So this is definitely the worst way of creating a data structure in C
+// But whatever! It works
+#define STACK_LENGTH(_stack) (_stack##_length)
+#define STACK_PUSH(_stack, _value) { _stack[_stack##_length] = (_value); _stack##_length++; }
+#define STACK_POP(_stack) (_stack##_length--, _stack[_stack##_length])
+#define STACK_PEEK(_stack) (_stack[_stack##_length - 1])
 
-bool evaluator_peek(struct evaluator_context *ctx, enum token what) {
-    return ctx->idx < ctx->tokens_length && ctx->tokens[ctx->idx] == what;
-}
+#define OUTPUT_LAST (output[*output_length - 1])
+#define OUTPUT_PUSH(value) { output[*output_length] = (value); (*output_length)++; }
+#define OUTPUT_PUSH_OPERATOR(op) OUTPUT_PUSH(((struct evaluator_postfix_item){ \
+        .is_operator = true, .value = { .operator = op } \
+    }))
+#define OUTPUT_PUSH_NUMBER(num) OUTPUT_PUSH(((struct evaluator_postfix_item){ \
+        .is_operator = false, .value = { .number = num } \
+    }))
 
-bool evaluator_accept(struct evaluator_context *ctx, enum token what) {
-    if (evaluator_peek(ctx, what)) {
-        ctx->idx++;
-        return true;
-    }
-    return false;
-}
+// Adapted from algorithm at:
+//   https://en.wikipedia.org/wiki/Shunting-yard_algorithm
+enum evaluator_status evaluator_shunt(
+    enum token *tokens, token_index_t tokens_length,
+    struct evaluator_postfix_item *output, token_index_t *output_length
+) {
+    // Set up pointers and data structures
+    token_index_t tokens_index = 0;
 
-bool evaluator_accept_digit(struct evaluator_context *ctx, uint8_t *digit) {
-    for (uint8_t i = 0; i < 10; i++) {
-        if (evaluator_accept(ctx, TOKEN_0 + i)) {
-            *digit = i;
-            return true;
+    *output_length = 0;
+
+    enum token operator_stack[TOKEN_LIMIT];
+    token_index_t operator_stack_length = 0;
+
+    bool last_was_digit = false;
+
+    // Iterate over tokens
+    while (tokens_index < tokens_length) {
+        enum token this_token = tokens[tokens_index];
+        bool this_was_digit = false;
+
+        // If this token is a digit...
+        if (this_token >= TOKEN_0 && this_token <= TOKEN_9) {
+            // Get the numeric value of this digit
+            evaluator_t value = this_token - TOKEN_0;
+
+            // Is the previous value in the output also a digit?
+            // (If there exists a previous value)
+            if (last_was_digit) {
+                // If so, add this digit to continue that numeric literal
+                OUTPUT_LAST.value.number *= 10;
+                OUTPUT_LAST.value.number += value;
+            } else {
+                // Otherwise, just push it straight on
+                OUTPUT_PUSH_NUMBER(value);
+            }
+
+            this_was_digit = true;
         }
+        // Or, if this token is a left paren...
+        else if (this_token == TOKEN_LPAREN) {
+            // Push it onto the stack
+            STACK_PUSH(operator_stack, TOKEN_LPAREN);
+        }
+        // Or, if this token is a right paren...
+        else if (this_token == TOKEN_RPAREN) {
+            // Pop the operator stack until we empty it or encounter left paren
+            while (STACK_LENGTH(operator_stack) > 0) {
+                enum token popped_token = STACK_POP(operator_stack);
+                if (popped_token == TOKEN_LPAREN) {
+                    goto matching_paren_found;
+                } else {
+                    OUTPUT_PUSH_OPERATOR(popped_token);
+                }
+            }
+
+            // We emptied the stack and didn't find a matching bracket, that's a
+            // syntax error
+            return EVALUATOR_STATUS_SYNTAX_ERROR;
+
+            matching_paren_found:;
+        }
+        // Or, if this token is an operator
+        else if (token_is_operator(this_token)) {
+            // While...
+            while (
+                // ...there's a token at the top of the operator stack...
+                STACK_LENGTH(operator_stack) > 0
+                && token_is_operator(STACK_PEEK(operator_stack)) 
+                // ...and the stack token has at least the precedence of the
+                // one in the input...
+                // (NOTE: shortcut because all implemented ops are left-assoc)
+                && token_operator_precedence(STACK_PEEK(operator_stack))
+                    >= token_operator_precedence(this_token)
+                // ...and the stack token isn't an lparen
+                && STACK_PEEK(operator_stack) != TOKEN_LPAREN
+            ) {
+                // Push the token onto the operator stack
+                OUTPUT_PUSH_OPERATOR(STACK_POP(operator_stack));
+            }
+
+            STACK_PUSH(operator_stack, this_token);
+        }
+        
+        tokens_index++;
+        last_was_digit = this_was_digit;
     }
 
-    return false;
-}
-
-enum evaluator_status evaluator_expect(struct evaluator_context *ctx, enum token what) {
-    if (evaluator_accept(ctx, what)) {
-        return EVALUATOR_STATUS_OK;
-    }
-    return EVALUATOR_STATUS_SYNTAX_ERROR;
-}
-
-#include <stdio.h>
-
-enum evaluator_status evaluator_integer(struct evaluator_context *ctx, evaluator_t *result) {
-    uint8_t digit;
-    
-    // We need at least one digit
-    if (!evaluator_accept_digit(ctx, &digit)) {
-        return EVALUATOR_STATUS_SYNTAX_ERROR;
-    }
-
-    *result = digit;
-
-    // Now deal with more digits
-    while (evaluator_accept_digit(ctx, &digit)) {
-        *result *= 10;
-        *result += digit;
-    }
-
-    return EVALUATOR_STATUS_OK;
-}
-
-enum evaluator_status evaluator_expression(struct evaluator_context *ctx, evaluator_t *result) {
-    return evaluator_add_sub_cascade(ctx, result);
-}
-
-enum evaluator_status evaluator_add_sub_cascade(struct evaluator_context *ctx, evaluator_t *result) {
-    EVALUATOR_STATUS_PROP(evaluator_mul_div_cascade(ctx, result));
-
-    if (evaluator_accept(ctx, TOKEN_PLUS)) {
-        evaluator_t recurse_result;
-        EVALUATOR_STATUS_PROP(evaluator_add_sub_cascade(ctx, &recurse_result));
-
-        *result += recurse_result;
-    } else if (evaluator_accept(ctx, TOKEN_SUBTRACT)) {
-        // TODO: this is broken: "1 - 2 - 5" returns 4
-        evaluator_t recurse_result;
-        EVALUATOR_STATUS_PROP(evaluator_add_sub_cascade(ctx, &recurse_result));
-
-        *result -= recurse_result;
-    }
-
-    return EVALUATOR_STATUS_OK;
-}
-
-enum evaluator_status evaluator_mul_div_cascade(struct evaluator_context *ctx, evaluator_t *result) {
-    EVALUATOR_STATUS_PROP(evaluator_brackets_cascade(ctx, result));
-
-    if (evaluator_accept(ctx, TOKEN_MULTIPLY)) {
-        evaluator_t recurse_result;
-        EVALUATOR_STATUS_PROP(evaluator_mul_div_cascade(ctx, &recurse_result));
-
-        *result *= recurse_result;
-    } else if (evaluator_accept(ctx, TOKEN_DIVIDE)) {
-        evaluator_t recurse_result;
-        EVALUATOR_STATUS_PROP(evaluator_mul_div_cascade(ctx, &recurse_result));
-
-        *result /= recurse_result;
+    // Empty the operator stack
+    while (STACK_LENGTH(operator_stack) > 0) {
+        OUTPUT_PUSH_OPERATOR(STACK_POP(operator_stack));
     }
 
     return EVALUATOR_STATUS_OK;
-}
-
-enum evaluator_status evaluator_brackets_cascade(struct evaluator_context *ctx, evaluator_t *result) {
-    if (evaluator_accept(ctx, TOKEN_LPAREN)) {
-        enum evaluator_status status = evaluator_expression(ctx, result);
-        evaluator_expect(ctx, TOKEN_RPAREN);
-        return status;
-    } else {
-        return evaluator_number_cascade(ctx, result);
-    }
-}
-
-enum evaluator_status evaluator_number_cascade(struct evaluator_context *ctx, evaluator_t *result) {
-    // TODO: decimals
-    return evaluator_integer(ctx, result);
 }

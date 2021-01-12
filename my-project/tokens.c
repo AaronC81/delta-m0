@@ -21,3 +21,24 @@ const uint8_t *token_bitmaps[TOKEN_BITMAPS_LENGTH] = {
     graphics_token_multiply,
     graphics_token_divide,
 };
+
+bool token_is_operator(enum token t) {
+    return
+        t == TOKEN_PLUS ||
+        t == TOKEN_SUBTRACT ||
+        t == TOKEN_MULTIPLY ||
+        t == TOKEN_DIVIDE;
+}
+
+uint8_t token_operator_precedence(enum token t) {
+    switch (t) {
+    case TOKEN_MULTIPLY:
+    case TOKEN_DIVIDE:
+        return 2;
+    case TOKEN_PLUS:
+    case TOKEN_SUBTRACT:
+        return 1;
+    default:
+        return 0;
+    }
+}

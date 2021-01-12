@@ -5,9 +5,7 @@
 #include <stdbool.h>
 #include "evaluator.h"
 
-#define INPUT_TOKEN_LIMIT 128
-
-extern enum token input_tokens[INPUT_TOKEN_LIMIT];
+extern enum token input_tokens[TOKEN_LIMIT];
 
 void input_cursor_left(void);
 void input_cursor_right(void);

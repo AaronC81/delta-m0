@@ -3,9 +3,9 @@
 
 #include "ssd1306.h"
 
-enum token input_tokens[INPUT_TOKEN_LIMIT] = { 0 };
+enum token input_tokens[TOKEN_LIMIT] = { 0 };
 
-// Change these sizes if INPUT_TOKEN_LIMIT goes over their max
+// Change these sizes if TOKEN_LIMIT goes over their max
 token_index_t input_tokens_cursor = 0; // The token which your cursor is BEFORE
 token_index_t input_tokens_length = 0;
 
@@ -28,7 +28,7 @@ void input_cursor_right(void) {
 }
 
 bool input_insert(enum token tk) {
-    if (input_tokens_length == INPUT_TOKEN_LIMIT) {
+    if (input_tokens_length == TOKEN_LIMIT) {
         return false;
     }
 
@@ -100,13 +100,10 @@ void input_redraw_tokens(uint8_t x, uint8_t page) {
 
 void input_evaluate(void) {
     // Evaluate
-    struct evaluator_context ctx = {
-        .idx = 0,
-        .tokens = input_tokens,
-        .tokens_length = input_tokens_length,
-    };
     evaluator_t result;
-    enum evaluator_status status = evaluator_expression(&ctx, &result);
+    // enum evaluator_status status = evaluator_expression(&ctx, &result);
+    // TODO: Use new shunt
+    enum evaluator_status status;
 
     switch (status) {
     case EVALUATOR_STATUS_OK:

@@ -1,42 +1,72 @@
 #include <assert.h>
+#include <string.h>
 
 #include "evaluator.h"
 #include "tokens.h"
 
-#define ASSERT_END assert(ctx.idx == ctx.tokens_length)
 #define TOKENS(...) ((enum token[]){ __VA_ARGS__ })
 #define TOKENS_L(...) TOKENS(__VA_ARGS__), (sizeof(TOKENS(__VA_ARGS__)) / sizeof(enum token))
 
-struct evaluator_context ctx;
+#define PF_OP(op) ((struct evaluator_postfix_item){ \
+        .is_operator = true, .value = { .operator = op } \
+    })
+#define PF_NUM(num) ((struct evaluator_postfix_item){ \
+        .is_operator = false, .value = { .number = num } \
+    })
+#define PF_ITEMS(...) ((struct evaluator_postfix_item[]){ __VA_ARGS__ })
+#define PF_ITEMS_L(...) PF_ITEMS(__VA_ARGS__), (sizeof(PF_ITEMS(__VA_ARGS__)) / sizeof(struct evaluator_postfix_item))
+
+
 
 void test_expression(enum token* tokens, token_index_t tokens_length, evaluator_t expected_result) {
-    ctx.idx = 0;
-    ctx.tokens = tokens;
-    ctx.tokens_length = tokens_length;
+    // evaluator_t result = 0;
+    // assert(evaluator_expression(&ctx, &result) == EVALUATOR_STATUS_OK);
+    // assert(result == expected_result);
+    // ASSERT_END;
+}
 
-    evaluator_t result;
-    assert(evaluator_expression(&ctx, &result) == EVALUATOR_STATUS_OK);
-    assert(result == expected_result);
-    ASSERT_END;
+void test_shunt(
+    enum token* tokens, token_index_t tokens_length,
+    struct evaluator_postfix_item* expected_items, token_index_t expected_items_length
+) {
+    struct evaluator_postfix_item actual_items[TOKEN_LIMIT];
+    token_index_t actual_items_length;
+
+    evaluator_shunt(tokens, tokens_length, actual_items, &actual_items_length);
+
+    assert(actual_items_length == expected_items_length);
+
+    for (token_index_t i = 0; i < actual_items_length; i++) {
+        assert(actual_items[i].is_operator == expected_items[i].is_operator);
+
+        if (actual_items[i].is_operator) {
+            assert(actual_items[i].value.operator == expected_items[i].value.operator);
+        } else {
+            assert(actual_items[i].value.number == expected_items[i].value.number);
+        }
+    }
 }
 
 int main(void) {
-    // Test accept
-    ctx.idx = 0;
-    ctx.tokens = (enum token[]){ TOKEN_1 };
-    ctx.tokens_length = 1;
-    assert(evaluator_accept(&ctx, TOKEN_0) == false);
-    assert(evaluator_accept(&ctx, TOKEN_1) == true);
-    assert(ctx.idx == 1);
+    // Test shunting a digit
+    test_shunt(
+        TOKENS_L(TOKEN_6),
+        PF_ITEMS_L(PF_NUM(6))
+    );
 
 
-    // Test expect
-    ctx.idx = 0;
-    ctx.tokens = (enum token[]){ TOKEN_1 };
-    ctx.tokens_length = 1;
-    assert(evaluator_expect(&ctx, TOKEN_0) == EVALUATOR_STATUS_SYNTAX_ERROR);
-    assert(evaluator_expect(&ctx, TOKEN_1) == EVALUATOR_STATUS_OK);
-    ASSERT_END;
+    // Test shunting a simple addition
+    test_shunt(
+        TOKENS_L(TOKEN_6, TOKEN_PLUS, TOKEN_2),
+        PF_ITEMS_L(PF_NUM(6), PF_NUM(2), PF_OP(TOKEN_PLUS))
+    );
+
+
+    // Test shunting an expression with relevant precedence
+    test_shunt(
+        TOKENS_L(TOKEN_6, TOKEN_PLUS, TOKEN_2, TOKEN_MULTIPLY, TOKEN_3, TOKEN_PLUS, TOKEN_7),
+        PF_ITEMS_L(PF_NUM(6), PF_NUM(2), PF_NUM(3), PF_OP(TOKEN_MULTIPLY), PF_OP(TOKEN_PLUS), PF_NUM(7), PF_OP(TOKEN_PLUS))
+    );
 
 
     // Test digit accept
@@ -67,5 +97,10 @@ int main(void) {
     test_expression(
         TOKENS_L(TOKEN_LPAREN, TOKEN_1, TOKEN_PLUS, TOKEN_2, TOKEN_RPAREN, TOKEN_MULTIPLY, TOKEN_2),
         6
+    );
+
+    test_expression(
+        TOKENS_L(TOKEN_5, TOKEN_SUBTRACT, TOKEN_2, TOKEN_SUBTRACT, TOKEN_4),
+        -1
     );
 }
