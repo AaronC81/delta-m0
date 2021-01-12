@@ -5,7 +5,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 mkdir -p "$DIR/bin"
 
 # Build and run evaluator tests
-gcc \
+gcc -g \
     "$DIR/../my-project/tokens.c" \
     "$DIR/../my-project/evaluator.c" \
     "$DIR/../my-project/assets/graphics.c" \
