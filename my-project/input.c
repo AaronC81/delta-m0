@@ -34,7 +34,9 @@ bool input_insert(enum token tk) {
 
     // Move everything one forwards
     if (input_tokens_length > 0) {
-        for (token_index_t i = input_tokens_length - 1; i >= input_tokens_cursor; i--) {
+        // We basically need a signed token_index_t, but an int32_t is probably
+        // big enough, right
+        for (int32_t i = input_tokens_length - 1; i >= input_tokens_cursor; i--) {
             input_tokens[i + 1] = input_tokens[i];
         }
     }
@@ -54,7 +56,7 @@ void input_delete(void) {
     }
     
     // Move everything one back (overwrites current item)
-    for (token_index_t i = input_tokens_cursor; i < input_tokens_length; i++) {
+    for (token_index_t i = input_tokens_cursor - 1; i < input_tokens_length; i++) {
         input_tokens[i] = input_tokens[i + 1];
     }
 
@@ -152,4 +154,9 @@ void input_draw_evaluator_t(evaluator_t number, uint8_t x, uint8_t page) {
         x -= token_bitmaps[TOKEN_SUBTRACT][0];
         ssd1306_draw_bitmap(token_bitmaps[TOKEN_SUBTRACT], x, page);
     }
+}
+
+void input_clear(void) {
+    input_tokens_cursor = 0;
+    input_tokens_length = 0;
 }
