@@ -99,11 +99,17 @@ void input_redraw_tokens(uint8_t x, uint8_t page) {
 }
 
 void input_evaluate(void) {
-    // Evaluate
+    // Shunt to postfix, and then evaluate if that was successful
+    struct evaluator_postfix_item items[TOKEN_LIMIT];
+    token_index_t items_length;
+    enum evaluator_status status = evaluator_shunt(
+        input_tokens, input_tokens_length, items, &items_length
+    );
+    
     evaluator_t result;
-    // enum evaluator_status status = evaluator_expression(&ctx, &result);
-    // TODO: Use new shunt
-    enum evaluator_status status;
+    if (status == EVALUATOR_STATUS_OK) {
+        evaluator_evaluate(items, items_length, &result);
+    }
 
     switch (status) {
     case EVALUATOR_STATUS_OK:
