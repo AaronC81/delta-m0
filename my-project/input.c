@@ -157,6 +157,12 @@ void input_draw_evaluator_t(evaluator_t number, uint8_t x, uint8_t page) {
         negative = true;
         number = -number;
     }
+
+    // Clear the entire rows of pixels
+    uint8_t blank[] = { 1, 2, 0, 0 };
+    for (uint8_t i = 0; i < SSD1306_WIDTH; i++) {
+        ssd1306_draw_bitmap(blank, i, page);
+    }
     
     // Print the whole part
     uint32_t whole = number / 1;
