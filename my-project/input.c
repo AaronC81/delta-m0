@@ -41,6 +41,8 @@ bool input_insert(enum token tk) {
         }
     }
 
+    input_clear_from_cursor(0);
+
     // Insert new token
     input_tokens[input_tokens_cursor] = tk;
     input_tokens_length++;
@@ -49,11 +51,17 @@ bool input_insert(enum token tk) {
     return true;
 }
 
+uint8_t input_last_cursor_x = 0;
+const uint8_t input_digit_padding = 3; // Space between bitmaps
+
 void input_delete(void) {
     // We can't delete if we're at the beginning
     if (input_tokens_cursor == 0) {
         return;
     }
+
+    // Get the width of this token we're about to delete, for later
+    uint8_t token_width = token_bitmaps[input_tokens[input_tokens_cursor - 1]][0];
     
     // Move everything one back (overwrites current item)
     for (token_index_t i = input_tokens_cursor - 1; i < input_tokens_length; i++) {
@@ -62,10 +70,20 @@ void input_delete(void) {
 
     input_tokens_cursor--;
     input_tokens_length--;
+
+    // We need to clear from the start of the token we deleted
+    input_clear_from_cursor(-1 * (token_width + input_digit_padding));
 }
 
-uint8_t input_last_cursor_x = 0;
-const uint8_t input_digit_padding = 3; // Space between bitmaps
+void input_clear_from_cursor(int8_t offset) {
+    uint8_t blank[] = { 1, 2, 0, 0 };
+
+    uint8_t current_x = input_last_cursor_x + offset;
+    while (current_x < SSD1306_WIDTH) {
+        ssd1306_draw_bitmap(blank, current_x, INPUT_ENTRY_PAGE);
+        current_x++;
+    }
+}
 
 // TODO: will have to rewrite this to make it much better at some point
 // It doesn't scroll and smears for non-end insertions
