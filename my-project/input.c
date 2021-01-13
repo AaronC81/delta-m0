@@ -183,4 +183,6 @@ void input_draw_evaluator_t(evaluator_t number, uint8_t x, uint8_t page) {
 void input_clear(void) {
     input_tokens_cursor = 0;
     input_tokens_length = 0;
+
+    ssd1306_fill(0);
 }
