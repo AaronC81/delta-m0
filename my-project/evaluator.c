@@ -116,6 +116,12 @@ enum evaluator_status evaluator_evaluate(
     struct evaluator_postfix_item *items, token_index_t items_length,
     evaluator_t *result
 ) {
+    // Special case: no items is 0
+    if (items_length == 0) {
+        *result = 0;
+        return;
+    }
+
     // Set up everything
     evaluator_t stack[TOKEN_LIMIT];
     token_index_t stack_length = 0;
