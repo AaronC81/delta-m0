@@ -166,12 +166,12 @@ void input_draw_evaluator_t(evaluator_t number, uint8_t x, uint8_t page) {
     
     // Print the whole part
     uint32_t whole = number / 1;
-    while (whole > 0) {
+    do {
         x -= digit_width + input_digit_padding;
         uint8_t digit = whole % 10;
         ssd1306_draw_bitmap(token_bitmaps[TOKEN_0 + digit], x, page);
         whole /= 10;
-    }
+    } while (whole > 0);
 
     // Print negative sign if needed
     if (negative) {
