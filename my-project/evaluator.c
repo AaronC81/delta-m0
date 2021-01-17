@@ -210,14 +210,14 @@ enum evaluator_status evaluator_shunt(
         last_was_digit = this_was_digit;
     }
 
-    // Empty the operator stack
-    while (STACK_LENGTH(operator_stack) > 0) {
-        OUTPUT_PUSH_OPERATOR(STACK_POP(operator_stack));
-    }
-
     // Reduce depth to 0
     while (depth > 0) {
         DEPTH_DECREASE();
+    }
+
+    // Empty the operator stack
+    while (STACK_LENGTH(operator_stack) > 0) {
+        OUTPUT_PUSH_OPERATOR(STACK_POP(operator_stack));
     }
 
     return EVALUATOR_STATUS_OK;
