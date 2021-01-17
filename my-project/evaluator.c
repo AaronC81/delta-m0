@@ -119,7 +119,7 @@ enum evaluator_status evaluator_evaluate(
     // Special case: no items is 0
     if (items_length == 0) {
         *result = 0;
-        return;
+        return EVALUATOR_STATUS_OK;
     }
 
     // Set up everything
