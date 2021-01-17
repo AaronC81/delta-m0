@@ -272,6 +272,10 @@ enum evaluator_status evaluator_evaluate(
                 b = STACK_POP(stack);
                 STACK_PUSH(stack, b / a);
                 break;
+            case TOKEN_NEGATE:
+                a = STACK_POP(stack);
+                STACK_PUSH(stack, -1 * a);
+                break;
             default:
                 return EVALUATOR_STATUS_SYNTAX_ERROR;
             }

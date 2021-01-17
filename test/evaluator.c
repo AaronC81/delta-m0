@@ -130,4 +130,9 @@ int main(void) {
         TOKENS_L(TOKEN_5, TOKEN_SUBTRACT, TOKEN_2, TOKEN_SUBTRACT, TOKEN_4),
         -1
     );
+
+    test_expression(
+        TOKENS_L(TOKEN_SUBTRACT, TOKEN_3),
+        -3
+    );
 }
