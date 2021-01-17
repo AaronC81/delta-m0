@@ -20,9 +20,10 @@ const uint8_t *token_bitmaps[TOKEN_BITMAPS_LENGTH] = {
     graphics_token_subtract,
     graphics_token_multiply,
     graphics_token_divide,
+    graphics_token_subtract, // Negate - should never be displayed
 };
 
-bool token_is_operator(enum token t) {
+bool token_is_binop(enum token t) {
     return
         t == TOKEN_PLUS ||
         t == TOKEN_SUBTRACT ||

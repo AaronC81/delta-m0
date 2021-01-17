@@ -74,6 +74,28 @@ int main(void) {
     );
 
 
+    // Test shunting a negative number
+    test_shunt(
+        TOKENS_L(TOKEN_SUBTRACT, TOKEN_3),
+        PF_ITEMS_L(PF_NUM(3), PF_OP(TOKEN_NEGATE))
+    );
+
+
+    // Test shunting an expression which uses unary operators
+    test_shunt(
+        // -3+-(-6-+2)
+        TOKENS_L(TOKEN_SUBTRACT, TOKEN_3, TOKEN_PLUS, TOKEN_SUBTRACT, TOKEN_LPAREN, TOKEN_SUBTRACT, TOKEN_6, TOKEN_SUBTRACT, TOKEN_PLUS, TOKEN_2, TOKEN_RPAREN),
+        PF_ITEMS_L(PF_NUM(3), PF_OP(TOKEN_NEGATE), PF_NUM(6), PF_OP(TOKEN_NEGATE), PF_NUM(2), PF_OP(TOKEN_SUBTRACT), PF_OP(TOKEN_NEGATE), PF_OP(TOKEN_PLUS))
+    );
+
+
+    // Test shunting consecutive unary ops
+    test_shunt(
+        TOKENS_L(TOKEN_SUBTRACT, TOKEN_SUBTRACT, TOKEN_3),
+        PF_ITEMS_L(PF_NUM(3))
+    );
+
+
     // Test digit accept
     test_expression(
         TOKENS_L(TOKEN_6),
